@@ -1,0 +1,1 @@
+"""John Bot test suite."""
