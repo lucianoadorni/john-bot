@@ -72,10 +72,15 @@ On Windows, `python` on your PATH is often a different interpreter than the one
 inside `.venv`, which fails with `No module named 'discord'`. Use either:
 
 ```powershell
-.\run.ps1
+.\run.cmd
 # or
 .\.venv\Scripts\python.exe -m johnbot
 ```
+
+`run.cmd` is a plain batch file, so it works even where PowerShell scripts are
+blocked (Windows defaults to `Restricted`, which refuses to run any `.ps1`).
+`run.ps1` does the same thing but needs
+`powershell -ExecutionPolicy Bypass -File .\run.ps1`.
 
 Expected console output:
 
@@ -153,6 +158,8 @@ stop-start cooldown are all exercised without connecting to Discord.
 
 | Symptom | Cause |
 | --- | --- |
+| `No module named 'discord'` | `python` is not the venv interpreter — use `run.cmd` |
+| `running scripts is disabled on this system` | Execution policy `Restricted`; use `run.cmd` instead of `run.ps1` |
 | `PrivilegedIntentsRequired` at startup | Enable Server Members + Presence intents in the portal |
 | `discord.LoginFailure` | Wrong/regenerated token in `.env` |
 | Slash commands missing | No `GUILD_ID` set → global sync can take up to an hour; set `GUILD_ID` and restart |
