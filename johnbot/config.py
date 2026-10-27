@@ -11,9 +11,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_DATA_DIR = BASE_DIR / "data"
 
-DEFAULT_WELCOME_MESSAGE = (
-    "Hey {member}, welcome to **{guild}**! You're member #{count} — say hi 👋"
-)
+DEFAULT_WELCOME_MESSAGE = "Hey {member}, welcome to **{guild}**! You're member #{count} — say hi 👋"
 
 
 def _int_or_none(name: str) -> int | None:
@@ -77,9 +75,7 @@ def load_config(env_file: Path | None = None) -> Config:
         welcome_channel_id=_int_or_none("WELCOME_CHANNEL_ID"),
         member_role_id=_int_or_none("MEMBER_ROLE_ID"),
         stream_channel_id=_int_or_none("STREAM_CHANNEL_ID"),
-        welcome_message=(
-            os.getenv("WELCOME_MESSAGE", "").strip() or DEFAULT_WELCOME_MESSAGE
-        ),
+        welcome_message=(os.getenv("WELCOME_MESSAGE", "").strip() or DEFAULT_WELCOME_MESSAGE),
         stream_alert_cooldown=max(0, _int_or("STREAM_ALERT_COOLDOWN", 3600)),
         log_level=os.getenv("LOG_LEVEL", "INFO").strip().upper() or "INFO",
     )

@@ -29,9 +29,7 @@ class JohnBot(commands.Bot):
             command_prefix=commands.when_mentioned,
             intents=intents,
             help_command=None,
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, roles=False, users=True
-            ),
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True),
         )
         self.config = config
         self.store = GuildStore(
@@ -69,9 +67,7 @@ class JohnBot(commands.Bot):
             len(self.guilds),
         )
         await self.change_presence(
-            activity=discord.Activity(
-                type=discord.ActivityType.watching, name="for new members"
-            ),
+            activity=discord.Activity(type=discord.ActivityType.watching, name="for new members"),
             status=discord.Status.online,
         )
 
@@ -85,7 +81,12 @@ class JohnBot(commands.Bot):
         elif isinstance(error, app_commands.CheckFailure):
             message = "You can't use that command here."
         else:
-            log.exception("Command %s failed", interaction.command, exc_info=error)
+            log.error(
+                "Command %s failed: %s",
+                getattr(interaction.command, "qualified_name", "unknown"),
+                error,
+                exc_info=(type(error), error, error.__traceback__),
+            )
             message = "Something went wrong — check the bot console."
 
         if interaction.response.is_done():

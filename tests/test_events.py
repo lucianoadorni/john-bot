@@ -31,9 +31,7 @@ class EventTestBase(unittest.IsolatedAsyncioTestCase):
 
         self.guild = FakeGuild()
         self.welcome_channel = self.guild.add_channel(FakeChannel(WELCOME_CHANNEL))
-        self.stream_channel = self.guild.add_channel(
-            FakeChannel(STREAM_CHANNEL, "streams")
-        )
+        self.stream_channel = self.guild.add_channel(FakeChannel(STREAM_CHANNEL, "streams"))
         self.role = self.guild.add_role(FakeRole(MEMBER_ROLE, "Member", position=5))
 
         defaults = GuildConfig(
@@ -89,17 +87,14 @@ class WelcomeEventTests(EventTestBase):
 
     async def test_missing_manage_roles_permission_is_reported(self):
         self.build()
-        self.guild.me.guild_permissions = type(
-            "Perms", (), {"manage_roles": False}
-        )()
+        self.guild.me.guild_permissions = type("Perms", (), {"manage_roles": False})()
         member = self.member()
 
         await Welcome(self.bot).on_member_join(member)
 
         self.assertEqual(member.added_roles, [])
         fields = {
-            f.name.removeprefix("⚠️ "): f.value
-            for f in self.welcome_channel.sent[0]["embed"].fields
+            f.name.removeprefix("⚠️ "): f.value for f in self.welcome_channel.sent[0]["embed"].fields
         }
         self.assertIn("Manage Roles", fields["Autorole failed"])
 
@@ -169,9 +164,7 @@ class StreamEventTests(EventTestBase):
         embed = self.stream_channel.sent[0]["embed"]
         self.assertEqual(embed.url, "https://twitch.tv/lucia")
         self.assertIn(member.display_name, embed.title)
-        self.assertEqual(
-            [field.name for field in embed.fields], ["Watch"]
-        )
+        self.assertEqual([field.name for field in embed.fields], ["Watch"])
         self.assertFalse(self.stream_channel.sent[0]["allowed_mentions"].everyone)
 
     async def test_already_streaming_is_not_re_announced(self):

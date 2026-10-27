@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import discord
 
-from johnbot.formatting import parse_stream_url, render_welcome
 from johnbot.cogs.streams import live_links
+from johnbot.formatting import parse_stream_url, render_welcome
 
 
 class ParseStreamUrlTests(unittest.TestCase):
@@ -29,9 +29,7 @@ class ParseStreamUrlTests(unittest.TestCase):
 
     def test_other_platform_falls_back_to_host(self):
         self.assertEqual(parse_stream_url("https://kick.com/foo").platform, "Kick")
-        self.assertEqual(
-            parse_stream_url("https://example.com/live").platform, "example.com"
-        )
+        self.assertEqual(parse_stream_url("https://example.com/live").platform, "example.com")
 
     def test_rejects_placeholders_and_junk(self):
         for raw in (

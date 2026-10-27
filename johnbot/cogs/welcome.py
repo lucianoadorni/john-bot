@@ -29,9 +29,7 @@ class Welcome(commands.Cog):
         role_problem = await self._grant_role(member, config)
         await self._send_welcome(member, config, role_problem)
 
-    async def _grant_role(
-        self, member: discord.Member, config: GuildConfig
-    ) -> str | None:
+    async def _grant_role(self, member: discord.Member, config: GuildConfig) -> str | None:
         """Add the autorole. Returns a human-readable problem, or None."""
         if not config.member_role_id:
             return None
@@ -84,6 +82,9 @@ class Welcome(commands.Cog):
         if channel is None:
             log.info("No welcome channel configured for %s — skipping greeting", guild)
             return
+        if not isinstance(channel, discord.abc.Messageable):
+            log.info("Welcome channel %s can't receive messages — skipping", channel)
+            return
 
         count = guild.member_count or len(guild.members)
         description = render_welcome(
@@ -119,9 +120,7 @@ class Welcome(commands.Cog):
         try:
             await channel.send(
                 embed=embed,
-                allowed_mentions=discord.AllowedMentions(
-                    everyone=False, roles=False, users=True
-                ),
+                allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True),
             )
         except discord.Forbidden:
             log.warning("No permission to post the welcome message in %s", channel)

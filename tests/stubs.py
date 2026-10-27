@@ -9,6 +9,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from types import SimpleNamespace
 
+import discord
+
 
 class FakePermissions:
     def __init__(self, **values: bool) -> None:
@@ -37,28 +39,29 @@ class FakeRole:
     def is_default(self) -> bool:
         return self.default
 
-    def __ge__(self, other: "FakeRole") -> bool:  # noqa: D105
+    def __ge__(self, other: FakeRole) -> bool:
         return self.position >= other.position
 
-    def __le__(self, other: "FakeRole") -> bool:  # noqa: D105
+    def __le__(self, other: FakeRole) -> bool:
         return self.position <= other.position
 
-    def __gt__(self, other: "FakeRole") -> bool:  # noqa: D105
+    def __gt__(self, other: FakeRole) -> bool:
         return self.position > other.position
 
-    def __lt__(self, other: "FakeRole") -> bool:  # noqa: D105
+    def __lt__(self, other: FakeRole) -> bool:
         return self.position < other.position
 
 
-class FakeChannel:
-    def __init__(
-        self, channel_id: int = 500, name: str = "welcome", **perms: bool
-    ) -> None:
+class FakeChannel(discord.abc.Messageable):
+    def __init__(self, channel_id: int = 500, name: str = "welcome", **perms: bool) -> None:
         self.id = channel_id
         self.name = name
         self.mention = f"<#{channel_id}>"
         self.sent: list[dict] = []
         self.permissions = FakePermissions(**perms)
+
+    def _get_channel(self) -> FakeChannel:
+        return self
 
     async def send(self, **kwargs) -> SimpleNamespace:
         self.sent.append(kwargs)

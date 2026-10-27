@@ -46,9 +46,7 @@ class StreamAlerts(commands.Cog):
         self._last_alert: dict[tuple[int, int, str], float] = {}
 
     @commands.Cog.listener()
-    async def on_presence_update(
-        self, before: discord.Member, after: discord.Member
-    ) -> None:
+    async def on_presence_update(self, before: discord.Member, after: discord.Member) -> None:
         if after.bot or after.guild is None:
             return
 
@@ -65,6 +63,9 @@ class StreamAlerts(commands.Cog):
         if channel is None:
             log.info("Stream channel %s is gone in %s", config.stream_channel_id, after.guild)
             return
+        if not isinstance(channel, discord.abc.Messageable):
+            log.warning("Stream channel %s can't receive messages", channel)
+            return
 
         now = time.monotonic()
         for link in new_links[:1]:  # one announcement per presence change
@@ -79,9 +80,7 @@ class StreamAlerts(commands.Cog):
         if len(self._last_alert) <= MAX_TRACKED_KEYS:
             return
         cutoff = now - self.cooldown
-        self._last_alert = {
-            key: seen for key, seen in self._last_alert.items() if seen > cutoff
-        }
+        self._last_alert = {key: seen for key, seen in self._last_alert.items() if seen > cutoff}
 
     async def _announce(
         self, channel: discord.abc.Messageable, member: discord.Member, link: StreamLink
@@ -104,9 +103,7 @@ class StreamAlerts(commands.Cog):
             await channel.send(
                 content=f"🔴 {member.mention} just went live",
                 embed=embed,
-                allowed_mentions=discord.AllowedMentions(
-                    everyone=False, roles=False, users=True
-                ),
+                allowed_mentions=discord.AllowedMentions(everyone=False, roles=False, users=True),
             )
         except discord.Forbidden:
             log.warning("No permission to announce streams in %s", channel)

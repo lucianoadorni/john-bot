@@ -105,6 +105,8 @@ the link is posted in the configured channel.
 
 The same member + URL pair is announced at most once per
 `STREAM_ALERT_COOLDOWN` seconds (default 3600) so short reconnects don't spam.
+Streams that were already live before the bot started are not re-announced — only
+new transitions are.
 
 ## Project layout
 
@@ -128,7 +130,7 @@ tests/            unittest suite, no token needed
 python -m unittest discover -s tests -t . -v
 ```
 
-14 tests cover URL parsing (Twitch/YouTube/Kick, placeholder rejection), welcome
+The 25 tests cover URL parsing (Twitch/YouTube/Kick, placeholder rejection), welcome
 templating, JSON persistence and a smoke test that loads every cog and checks the
 slash commands register — no bot token or network needed.
 

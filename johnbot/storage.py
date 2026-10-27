@@ -26,7 +26,7 @@ class GuildConfig:
     welcome_message: str = DEFAULT_WELCOME_MESSAGE
 
     @classmethod
-    def from_dict(cls, data: dict) -> "GuildConfig":
+    def from_dict(cls, data: dict) -> GuildConfig:
         known = {key: data[key] for key in cls.__dataclass_fields__ if key in data}
         return cls(**known)
 
@@ -67,9 +67,7 @@ class GuildStore:
             indent=2,
             ensure_ascii=False,
         )
-        handle, tmp_name = tempfile.mkstemp(
-            dir=self.path.parent, prefix=".guilds-", suffix=".json"
-        )
+        handle, tmp_name = tempfile.mkstemp(dir=self.path.parent, prefix=".guilds-", suffix=".json")
         try:
             with os.fdopen(handle, "w", encoding="utf-8") as fh:
                 fh.write(payload + "\n")

@@ -56,14 +56,16 @@ class Setup(commands.Cog):
             current,
             welcome_channel_id=channel.id if channel else current.welcome_channel_id,
             member_role_id=role.id if role else current.member_role_id,
-            welcome_message=(message.strip() if message and message.strip() else current.welcome_message),
+            welcome_message=(
+                message.strip() if message and message.strip() else current.welcome_message
+            ),
         )
 
         problems: list[str] = []
         if role is not None:
             problems.extend(self._role_problems(guild, role))
         if channel is not None:
-            problems.extend(self._channel_problems(guild, channel, "welcome"))
+            problems.extend(self._channel_problems(guild, channel))
 
         if problems:
             await interaction.response.send_message(
@@ -80,13 +82,11 @@ class Setup(commands.Cog):
 
     @setup.command(name="streams", description="Channel where live-stream links get posted")
     @app_commands.describe(channel="Channel for stream announcements")
-    async def streams(
-        self, interaction: discord.Interaction, channel: discord.TextChannel
-    ) -> None:
+    async def streams(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
         guild = interaction.guild
         assert guild is not None
 
-        problems = self._channel_problems(guild, channel, "stream")
+        problems = self._channel_problems(guild, channel)
         if problems:
             await interaction.response.send_message(
                 "I didn't save that:\n" + "\n".join(f"• {problem}" for problem in problems),
@@ -124,14 +124,10 @@ class Setup(commands.Cog):
         if role.managed:
             problems.append(f"**{role.name}** is managed by an integration.")
         if me.top_role <= role:
-            problems.append(
-                f"**{role.name}** must sit below my top role (**{me.top_role.name}**)."
-            )
+            problems.append(f"**{role.name}** must sit below my top role (**{me.top_role.name}**).")
         return problems
 
-    def _channel_problems(
-        self, guild: discord.Guild, channel: discord.TextChannel, kind: str
-    ) -> list[str]:
+    def _channel_problems(self, guild: discord.Guild, channel: discord.TextChannel) -> list[str]:
         me = guild.me
         if me is None:
             return ["I couldn't resolve my own member object."]
@@ -141,7 +137,7 @@ class Setup(commands.Cog):
             problems.append(f"I can't view {channel.mention}.")
         if not perms.send_messages:
             problems.append(f"I can't send messages in {channel.mention}.")
-        if kind == "stream" and not perms.embed_links:
+        if not perms.embed_links:
             problems.append(f"I need **Embed Links** in {channel.mention}.")
         return problems
 
@@ -159,7 +155,9 @@ class Setup(commands.Cog):
         )
         embed.add_field(
             name="Welcome channel",
-            value=f"<#{config.welcome_channel_id}>" if config.welcome_channel_id else "not set — falls back to the server's system channel",
+            value=f"<#{config.welcome_channel_id}>"
+            if config.welcome_channel_id
+            else "not set — falls back to the server's system channel",
             inline=False,
         )
         embed.add_field(
@@ -169,7 +167,9 @@ class Setup(commands.Cog):
         )
         embed.add_field(
             name="Stream channel",
-            value=f"<#{config.stream_channel_id}>" if config.stream_channel_id else "not set — stream alerts are off",
+            value=f"<#{config.stream_channel_id}>"
+            if config.stream_channel_id
+            else "not set — stream alerts are off",
             inline=False,
         )
         embed.add_field(name="Greeting", value=config.welcome_message[:1000], inline=False)
