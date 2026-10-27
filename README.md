@@ -68,13 +68,24 @@ Then:
 python -m johnbot
 ```
 
+On Windows, `python` on your PATH is often a different interpreter than the one
+inside `.venv`, which fails with `No module named 'discord'`. Use either:
+
+```powershell
+.\run.ps1
+# or
+.\.venv\Scripts\python.exe -m johnbot
+```
+
 Expected console output:
 
 ```
 Loaded johnbot.cogs.welcome
-Synced 3 commands to guild 123456789012345678
+Synced 1 command to guild 123456789012345678
 Logged in as John Bot#1234 (id ...) — in 1 guild(s)
 ```
+
+`/setup` is one command with three subcommands, which is why the sync count is 1.
 
 ### 4. Fine-tune in Discord
 

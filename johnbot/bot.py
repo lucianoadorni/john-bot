@@ -53,10 +53,19 @@ class JohnBot(commands.Bot):
             guild = discord.Object(id=self.config.guild_id)
             self.tree.copy_global_to(guild=guild)
             synced = await self.tree.sync(guild=guild)
-            log.info("Synced %d commands to guild %s", len(synced), self.config.guild_id)
+            log.info(
+                "Synced %d command%s to guild %s",
+                len(synced),
+                "" if len(synced) == 1 else "s",
+                self.config.guild_id,
+            )
         else:
             synced = await self.tree.sync()
-            log.info("Synced %d global commands (may take up to an hour to appear)", len(synced))
+            log.info(
+                "Synced %d global command%s (may take up to an hour to appear)",
+                len(synced),
+                "" if len(synced) == 1 else "s",
+            )
 
     async def on_ready(self) -> None:
         assert self.user is not None
